@@ -61,13 +61,13 @@ def main(args):
         it = (item for item in event_list if layer_name in item['name'])
         search_result = next(it, False)
         if(search_result):
-            print ("{:<10} {:<15} {:<15} {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]*(10^9)/search_result['dur'])/max_gops*100))
+            print ("{:<10} {:<15} {:<15} {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_gops*100))
             total_mac += mac_list[layer_num]
             total_dur += search_result['dur']
         else:
             print('There is no layer in the simulation result: ',layer_name,'\n')
 
-    print("Overall utilization: ", "{0:0.2f}".format((total_mac*(10^9)/total_dur)/max_gops*100),"%")
+    print("Overall utilization: ", "{0:0.2f}".format((total_mac/total_dur)/max_gops*100),"%")
 
     # close trace.json
     json_file.close()

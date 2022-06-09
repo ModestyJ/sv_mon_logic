@@ -34,7 +34,7 @@ Overall utilization:  52.67 %
 
 ## Usage
 ```
-$> python --help
+$> python trace_parser.py --help
 usage: trace_parser.py [-h] [--input INPUT] [--util UTIL] [--debug]
 
 help

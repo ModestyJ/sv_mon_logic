@@ -24,7 +24,7 @@ class utilization_mon_c;
     task run();
         $timeformat(-9); // time unit: ns
         if(vif!=null) begin
-            fd = $fopen({"./report/",name,".txt"}, "w");
+            fd = $fopen({"./report/",name,".json"}, "w");
             if(!fd) $fatal("file open error");
 
             $fdisplay(fd, "{");

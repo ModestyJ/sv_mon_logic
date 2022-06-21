@@ -1,6 +1,8 @@
 
 `ifndef SYNTHESIS
 `ifdef PROFILE
+    import sv_mon_pkg::*;
+
     //////////////////////////////
     // SRAM MONITOR
     `define WEIGHT_BUFF_HIER cnn_accel_tb.u_cnn_accel.weight_buff
@@ -88,7 +90,7 @@
         .input_loader_req       (u_cnn_accel.input_loader.down_req),
         // layer
         .layer_start            (layer_start),
-        .is_last_layer          (sim_done), //.is_last_layer    (is_last_layer),
+        .is_last_layer          (is_last_layer), // Check simulation end condition
         .layer_done             (layer_done)
     );
     utilization_mon_c util_mon;

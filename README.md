@@ -6,8 +6,7 @@ Simple monitoring logic to profile memory tarffic and utilizations
 ```
 git clone https://github.com/ModestyJ/sv_mon_logic.git
 ```
-
-1. Copy tb_example.sv contents to your <testbench_top_file>  
+1. Copy `tb_example.sv` contents to your <testbench_top_file>  
 
 2. Add below files in a compilation step  
 ```

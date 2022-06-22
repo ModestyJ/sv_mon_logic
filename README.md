@@ -21,7 +21,6 @@ vopt +acc -fsmdebug -o full_vis cnn_accel_tb glbl
 3. Load the design with `-permite_unmatched_virtual_intf` option  
 ```
 vsim -permit_unmatched_virtual_intf <top_design>
-
 ```
 
 ## How to integrate this in your design
@@ -74,10 +73,10 @@ vsim -permit_unmatched_virtual_intf <top_design>
 _json_ format must be completeness as follows.  
 ```
 {
-    "traceEvents": [
-		{"name": "dram", "cat": "mem_weight0", "ph": "X", "pid": 0, "tid": 3, "ts": 12255, "dur": 7660},
-		{"name": "dram", "cat": "mem_weight1", "ph": "X", "pid": 0, "tid": 3, "ts": 13255, "dur": 5660}
-    ]
+  "traceEvents": [
+    {"name": "dram", "cat": "mem_weight0", "ph": "X", "pid": 0, "tid": 3, "ts": 12255, "dur": 7660},
+    {"name": "dram", "cat": "mem_weight1", "ph": "X", "pid": 0, "tid": 3, "ts": 13255, "dur": 5660}
+  ]
 }
 ```
 

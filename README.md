@@ -1,6 +1,29 @@
 # sv_mon_logic
 Simple monitoring logic to profile memory tarffic and utilizations
 
+## Quick start with ModelSim
+1. Copy tb_example.sv contents to your <testbench_top_file>  
+
+2. Add below files in a compilation step  
+```
+vlog sv_mon_logic/sram_if.sv
+vlog sv_mon_logic/utilization_if.sv
+vlog sv_mon_logic/sv_mon_pkg.sv
+
+vlog +define+PROFILE <testbench_top_file>
+```
+
+3. Elaborate the design  
+```
+vopt +acc -fsmdebug -o full_vis cnn_accel_tb glbl
+```
+
+3. Load the design with `-permite_unmatched_virtual_intf` option  
+```
+vsim -permit_unmatched_virtual_intf <top_design>
+
+```
+
 ## How to integrate this in your design
 * Add below files in the design compilation
 ```
@@ -42,7 +65,7 @@ Prameterized virtual interface does not match to actual interface
 ```
 It's possible the parameters used to declare a virtual interface type do not match the parameters of any instance of the actual interface.  
 This is totally intentional behavior, because virtual interface could be **null** in case of actual interface is not connected.  
-Because this is not syntax error, just ignore using below command to load design. (**-permit_unmatched_virtual_intf**)
+Because this is not syntax error, just ignore using below command to load design. (`-permit_unmatched_virtual_intf`)
 ```
 vsim -permit_unmatched_virtual_intf <top_design>
 ```

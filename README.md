@@ -2,13 +2,13 @@
 Simple monitoring logic to profile memory tarffic and utilizations
 
 ## Quick start with ModelSim
-0. Get repository in your design directory  
+1. Get repository in your design directory
 ```
 git clone https://github.com/ModestyJ/sv_mon_logic.git
 ```
-1. Copy `tb_example.sv` contents to your <testbench_top_file>  
+2. Copy `tb_example.sv` contents to your <testbench_top_file>  
 
-2. Add below files in a compilation step  
+3. Add below files in a compilation step
 ```
 vlog sv_mon_logic/sram_if.sv
 vlog sv_mon_logic/utilization_if.sv
@@ -17,12 +17,12 @@ vlog sv_mon_logic/sv_mon_pkg.sv
 vlog +define+PROFILE <testbench_top_file>
 ```
 
-3. Elaborate the design  
+4. Elaborate the design
 ```
 vopt +acc -o <top_design>
 ```
 
-3. Load the design with `-permite_unmatched_virtual_intf` option  
+5. Load the design with `-permite_unmatched_virtual_intf` option
 ```
 vsim -permit_unmatched_virtual_intf <top_design>
 ```

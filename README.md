@@ -15,7 +15,7 @@ vlog +define+PROFILE <testbench_top_file>
 
 3. Elaborate the design  
 ```
-vopt +acc -fsmdebug -o full_vis cnn_accel_tb glbl
+vopt +acc -o <top_design>
 ```
 
 3. Load the design with `-permite_unmatched_virtual_intf` option  

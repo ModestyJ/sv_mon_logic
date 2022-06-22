@@ -2,6 +2,11 @@
 Simple monitoring logic to profile memory tarffic and utilizations
 
 ## Quick start with ModelSim
+0. Get repository in your design directory  
+```
+git clone https://github.com/ModestyJ/sv_mon_logic.git
+```
+
 1. Copy tb_example.sv contents to your <testbench_top_file>  
 
 2. Add below files in a compilation step  
@@ -30,7 +35,7 @@ sram_if.sv
 utilization_if.sv
 sv_mon_pkg.sv
 ```
-* Instantiate inteface and connect them to the virtual interface in the monitor class. Refer to `tb_example.sv`  
+* Instantiate inteface and connect them to the virtual interface in the monitor class. Refer to `tb_example.sv`. Please keep in mind that `import sv_mon_pkg::*;` must be added in your TB to use monitor classes.  
 * Do simulation using RTL simulators such as xcelium, vcs and modelsim  
 * Report files will be generated in the simulation time  
 ```

@@ -28,7 +28,20 @@ class utilization_mon_c;
             if(!fd) $fatal("file open error");
 
             $fdisplay(fd, "{");
+            $fdisplay(fd, "\t\"displayTimeUnit\": \"ns\",");
             $fdisplay(fd, "\t\"traceEvents\": [");
+            // Mapping pid, tid name for readability {
+            $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 0, \"args\": {\"labels\": \"Row-based\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 1, \"args\": {\"name\": \"convolution\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 2, \"args\": {\"name\": \"input_act_copy_dram2buffer\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 3, \"args\": {\"name\": \"weight_copy_dram2buffer\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 1, \"args\": {\"labels\": \"Frame-based\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 1, \"args\": {\"name\": \"convolution\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 2, \"args\": {\"name\": \"input_act_copy_dram2buffer\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 3, \"args\": {\"name\": \"weight_copy_dram2buffer\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 2, \"args\": {\"labels\": \"Layer\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 2, \"tid\": 0, \"args\": {\"name\": \"layer\"} },");
+            // Mapping pid, tid name for readability }
 
             fork
                 forever begin: conv_compute

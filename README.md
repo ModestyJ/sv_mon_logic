@@ -56,6 +56,7 @@ report/*.txt
 Open chrome browser and type below to address window  
 chrome://tracing  
 Load **\*.json**  
+![img_tracing_example](./img/img_tracing_example.png)
 
 * **\*.json** files also can feed to `util/trace_parser.py` to calculate NPU utilization  
 

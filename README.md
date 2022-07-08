@@ -27,6 +27,9 @@ vopt +acc -o <top_design>
 vsim -permit_unmatched_virtual_intf <top_design>
 ```
 
+> '-permite_unmatched_virtual_intf' is only for ModelSim
+> No need to add any special option for Synopsys VCS and Cadence Xcelium
+
 ## How to integrate this in your design
 * Add below files in the design compilation
 ```

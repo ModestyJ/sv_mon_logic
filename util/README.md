@@ -45,4 +45,5 @@ optional arguments:
                         simulation profile result(json file)
   --util UTIL, -u UTIL  data to calculate utilization for each layer(json file)
   --debug, -d           manual debug mode
+  --debugutil, -du      debug mode to calculate runtime ratio, average utilization for target layers
 ```

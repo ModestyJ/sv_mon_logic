@@ -27,7 +27,7 @@ interface utilization_if
         // layer
         input layer_start,
         input layer_done,
-        input sim_done,
+        input sim_done
     );
 
     clocking cb@(posedge clk);

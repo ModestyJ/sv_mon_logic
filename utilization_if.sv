@@ -26,8 +26,8 @@ interface utilization_if
         input logic input_loader_req,
         // layer
         input layer_start,
-        input is_last_layer,
-        input layer_done
+        input layer_done,
+        input sim_done,
     );
 
     clocking cb@(posedge clk);

@@ -114,15 +114,16 @@ class utilization_mon_c;
                     @(posedge vif.layer_done)
                     dur_layer = $time - ts_layer;
                     cat = layer;
-                    if(vif.is_last_layer) begin
-                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d}", num_layer, cat.name(), ts_layer, dur_layer);
-                        $fdisplay(fd, "\t\]");
-                        $fdisplay(fd, "}");
-                        $fclose(fd);
-                    end else begin
-                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d},", num_layer, cat.name(), ts_layer, dur_layer);
-                        num_layer++;
-                    end
+                    $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d},", num_layer, cat.name(), ts_layer, dur_layer);
+                    num_layer++;
+                end
+
+                forever begin: sim_done
+                    @(posedge vif.sim_done)
+                    $fdisplay(fd, "\t\t{}");
+                    $fdisplay(fd, "\t]");
+                    $fdisplay(fd, "}");
+                    $fclose(fd);
                 end
             join
 

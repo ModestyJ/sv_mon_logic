@@ -64,7 +64,7 @@ class utilization_mon_c;
                     @(negedge |vif.conv_vld)
                     dur_conv = $time - ts_conv;
                     cat = conv;
-                    $fdisplay(fd, "\t\t{\"name\": \"conv_row%0d_ic%0d_oc%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 1, \"ts\": %t, \"dur\": %t},", h, ic, oc, cat.name(), vif.dataflow_en, ts_conv, dur_conv);
+                    $fdisplay(fd, "\t\t{\"name\": \"conv_row%0d_ic%0d_oc%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 1, \"ts\": %d, \"dur\": %d},", h, ic, oc, cat.name(), vif.dataflow_en, ts_conv, dur_conv);
 
                 end
 
@@ -76,13 +76,13 @@ class utilization_mon_c;
                         @(negedge vif.input_loader_req)
                         dur_act = $time - ts_act;
                         cat = mem_input_act;
-                        $fdisplay(fd, "\t\t{\"name\": \"input_act_copy_from_dram_to_buffer_row%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %t, \"dur\": %t},", vif.h_row+1, cat.name(), vif.dataflow_en, ts_act, dur_act);
+                        $fdisplay(fd, "\t\t{\"name\": \"input_act_copy_from_dram_to_buffer_row%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %d, \"dur\": %d},", vif.h_row+1, cat.name(), vif.dataflow_en, ts_act, dur_act);
                     end
                     else begin // frame-based
                         @(negedge vif.input_loader_rev_frame)
                         dur_act = $time - ts_act;
                         cat = mem_input_act;
-                        $fdisplay(fd, "\t\t{\"name\": \"input_act_copy_from_dram_to_buffer%0d_entire_frame(double_buff)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %t, \"dur\": %t},", vif.input_buff_sel_frame, cat.name(), vif.dataflow_en, ts_act, dur_act);
+                        $fdisplay(fd, "\t\t{\"name\": \"input_act_copy_from_dram_to_buffer%0d_entire_frame(double_buff)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %d, \"dur\": %d},", vif.input_buff_sel_frame, cat.name(), vif.dataflow_en, ts_act, dur_act);
                     end
                 end
 
@@ -95,7 +95,7 @@ class utilization_mon_c;
                         dur_weight = $time - ts_weight;
 
                         cat = mem_weight;
-                        $fdisplay(fd, "\t\t{\"name\": \"weight_copy_from_dram_to_paramload_row%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %t, \"dur\": %t},", vif.h_row, cat.name(), vif.dataflow_en, ts_weight, dur_weight);
+                        $fdisplay(fd, "\t\t{\"name\": \"weight_copy_from_dram_to_paramload_row%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %d, \"dur\": %d},", vif.h_row, cat.name(), vif.dataflow_en, ts_weight, dur_weight);
                     end
                     else begin // frame-based
                         ts_weight = $time;
@@ -104,7 +104,7 @@ class utilization_mon_c;
                         dur_weight = $time - ts_weight;
 
                         cat = mem_weight;
-                        $fdisplay(fd, "\t\t{\"name\": \"weight_copy_from_dram_to_weight_buff(double_buff%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %t, \"dur\": %t},", vif.weight_buf_sel_frame, cat.name(), vif.dataflow_en, ts_weight, dur_weight);
+                        $fdisplay(fd, "\t\t{\"name\": \"weight_copy_from_dram_to_weight_buff(double_buff%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %d, \"dur\": %d},", vif.weight_buf_sel_frame, cat.name(), vif.dataflow_en, ts_weight, dur_weight);
                     end
                 end
 
@@ -115,12 +115,12 @@ class utilization_mon_c;
                     dur_layer = $time - ts_layer;
                     cat = layer;
                     if(vif.is_last_layer) begin
-                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %t, \"dur\": %t}", num_layer, cat.name(), ts_layer, dur_layer);
+                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d}", num_layer, cat.name(), ts_layer, dur_layer);
                         $fdisplay(fd, "\t\]");
                         $fdisplay(fd, "}");
                         $fclose(fd);
                     end else begin
-                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %t, \"dur\": %t},", num_layer, cat.name(), ts_layer, dur_layer);
+                        $fdisplay(fd, "\t\t{\"name\": \"layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d},", num_layer, cat.name(), ts_layer, dur_layer);
                         num_layer++;
                     end
                 end

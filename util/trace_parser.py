@@ -47,7 +47,7 @@ def main(args):
     json_file = open(args.util,encoding = 'utf-8')
     util_data = json.load(json_file)
     pf = util_data['parallelism_factor']
-    freq = util_data['clock']
+    freq = util_data['clock_freq']
     mac_list = util_data['mac']
 
     max_gops = freq*pf*pf*2

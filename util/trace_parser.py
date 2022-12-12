@@ -108,7 +108,17 @@ def main(args):
                     targets_mac += mac_list[layer_num]
                 print(">")
                 print ("{:<10} {:<15} {:<15} {:<10}".format('Layer','Target Opts','Runtime(ratio)','Utilization(%)'))
-                print("{:<10} {:<15} {:d}({:.2%})\t {:0.2f}".format("Targets", targets_mac, int(targets_dur),targets_dur/total_dur, targets_mac/targets_dur/max_gops*100))
+                for layer_num in targets:
+                    layer_name = "layer"+str(layer_num)
+                    it = (item for item in event_list if layer_name in item['name'])
+                    search_result = next(it, False)
+                    if(search_result):
+                        print ("{:<10} {:<15} {:<15}\t {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_gops*100))
+                        total_mac += mac_list[layer_num]
+                        list_dur.append(search_result['dur'])
+                    else:
+                        print('There is no layer in the simulation result: ',layer_name,'\n')
+                print("{:<10} {:<15} {:d}({:.2%})\t {:0.2f}".format("Total", targets_mac, int(targets_dur),targets_dur/total_dur, targets_mac/targets_dur/max_gops*100))
                 targets=[]
                 targets_dur = 0.0
                 targets_mac = 0

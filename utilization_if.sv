@@ -24,6 +24,10 @@ interface utilization_if
         input int input_buff_sel_frame,
         // input activation
         input logic input_loader_req,
+        // output writer
+        input logic elt_wise_en,
+        input logic dma_start,
+        input logic dma_last,
         // layer
         input layer_start,
         input layer_done,

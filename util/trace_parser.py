@@ -59,7 +59,7 @@ def main(args):
 
     list_dur = []
     for layer_num in range(len(mac_list)):
-        layer_name = "layer"+str(layer_num)
+        layer_name = "Layer"+str(layer_num)
         it = (item for item in event_list if layer_name in item['name'])
         search_result = next(it, False)
         if(search_result):

@@ -40,8 +40,9 @@ class c2c_mon_c #(
                         cnt_write++;
                     end else begin
                         `ifdef TRACE_ALL
+                        temp_read_addr = vif.cb.addr;
                         @(vif.cb.r_valid)
-                        $fdisplay(fd, "[RD]addr:0x%0h, data:0x%0h", vif.cb.addr, vif.cb.data);
+                        $fdisplay(fd, "[RD]addr:0x%0h, data:0x%0h", temp_read_addr, vif.cb.data);
                         `endif
                         cnt_read++;
                     end

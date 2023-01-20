@@ -1,7 +1,7 @@
 `ifndef __c2c_mon
 `define __c2c_mon
 
-// `define TRACE_ALL
+`define TRACE_ALL
 
 class c2c_mon_c #(
     int DATA_WIDTH=32,
@@ -32,7 +32,7 @@ class c2c_mon_c #(
 
             fork
                 forever begin: port
-                    @(vif.cb.req)
+                    @(posedge vif.cb.req)
                     if(vif.cb.we==0) begin
                         `ifdef TRACE_ALL
                         $fdisplay(fd, "[WR]addr:0x%0h, data:0x%0h", vif.cb.addr, vif.cb.data);
@@ -48,10 +48,10 @@ class c2c_mon_c #(
                     end
                 end
                 forever begin: clear_sp
-                    @(vif.layer_done)
+                    @(posedge vif.layer_done)
+                    $fdisplay(fd, "layer%0d, W:%0d bytes, R:%0d bytes", num_layer, cnt_write*(DATA_WIDTH/8), cnt_read*(DATA_WIDTH/8));
                     cnt_write = 0;
                     cnt_read = 0;
-                    $fdisplay(fd, "layer%0d, W:%0d bytes, R:%0d bytes", num_layer, cnt_write*(DATA_WIDTH/8), cnt_read*(DATA_WIDTH/8));
                     num_layer++;
                 end
             join

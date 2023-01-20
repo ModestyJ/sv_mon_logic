@@ -29,7 +29,7 @@ class sram_mon_c #(int DATA_WIDTH=8, int ADDR_WIDTH=8);
 
             fork
                 forever begin: port
-                    @(vif_sp.cb.cs)
+                    @(posedge vif_sp.cb.cs)
                     if(vif_sp.cb.we==1) begin
                         `ifdef TRACE_ALL
                         $fdisplay(fd, "[WR]addr:0x%0h, data:0x%0h", vif_sp.cb.addr, vif_sp.cb.din);
@@ -43,10 +43,10 @@ class sram_mon_c #(int DATA_WIDTH=8, int ADDR_WIDTH=8);
                     end
                 end
                 forever begin: clear_sp
-                    @(vif_sp.layer_done)
+                    @(posedge vif_sp.layer_done)
+                    $fdisplay(fd, "layer%0d, W:%0d bytes, R:%0d bytes", num_layer, cnt_write*(DATA_WIDTH/8), cnt_read*(DATA_WIDTH/8));
                     cnt_write = 0;
                     cnt_read = 0;
-                    $fdisplay(fd, "layer%0d, W:%0d bytes, R:%0d bytes", num_layer, cnt_write*(DATA_WIDTH/8), cnt_read*(DATA_WIDTH/8));
                     num_layer++;
                 end
             join

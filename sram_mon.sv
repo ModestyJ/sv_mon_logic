@@ -1,7 +1,7 @@
 `ifndef __sram_mon
 `define __sram_mon
 
-`define TRACE_ALL
+// `define TRACE_ALL
 
 class sram_mon_c #(int DATA_WIDTH=8, int ADDR_WIDTH=8);
     virtual sram_sp_if#(DATA_WIDTH, ADDR_WIDTH) vif_sp;

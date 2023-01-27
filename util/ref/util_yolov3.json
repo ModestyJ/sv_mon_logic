@@ -1,6 +1,6 @@
 {
 	"parallelism_factor": 32,
-	"clock_freq": 0.2,
+	"clock_freq": 200,
 	"mac": [
         293502976,
         1592115200,

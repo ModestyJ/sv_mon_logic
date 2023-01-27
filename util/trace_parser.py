@@ -50,12 +50,13 @@ def main(args):
     freq = util_data['clock_freq']
     mac_list = util_data['mac']
 
-    max_gops = freq*pf*pf*2
-    print("Maximum GOPS for ", pf,"x",pf, " MACs @", freq, "GHz = ", max_gops)
+    max_mega_ops = freq*pf*pf*2
+    max_tops = max_mega_ops/1000000
+    print("Maximum TOPS for ", pf,"x",pf, " MACs @", freq, "MHz = ", max_tops)
 
     total_dur = 0.0;
     total_mac = 0;
-    print ("{:<10} {:<15} {:<15} {:<10}".format('Layer','Target Opts','Runtime(ns)','Utilization(%)'))
+    print ("{:<10} {:<15} {:<15} {:<10}".format('Layer','Target Opts','Runtime(us)','Utilization(%)'))
 
     list_dur = []
     for layer_num in range(len(mac_list)):
@@ -63,15 +64,15 @@ def main(args):
         it = (item for item in event_list if layer_name in item['name'])
         search_result = next(it, False)
         if(search_result):
-            print ("{:<10} {:<15} {:<15} {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_gops*100))
+            print ("{:<10} {:<15} {:<15} {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_mega_ops*100))
             total_mac += mac_list[layer_num]
             total_dur += search_result['dur']
             list_dur.append(search_result['dur'])
         else:
             print('There is no layer in the simulation result: ',layer_name,'\n')
 
-    print("{:<10} {:<15} {:<15} {:0.2f}".format("Overall", total_mac, int(total_dur), total_mac/total_dur/max_gops*100))
-    print("Overall utilization: ", "{0:0.2f}".format((total_mac/total_dur)/max_gops*100),"%")
+    print("{:<10} {:<15} {:<15} {:0.2f}".format("Overall", total_mac, int(total_dur), total_mac/total_dur/max_mega_ops*100))
+    print("Overall utilization: ", "{0:0.2f}".format((total_mac/total_dur)/max_mega_ops*100),"%")
 
     # close trace.json
     json_file.close()
@@ -113,12 +114,12 @@ def main(args):
                     it = (item for item in event_list if layer_name in item['name'])
                     search_result = next(it, False)
                     if(search_result):
-                        print ("{:<10} {:<15} {:<15}\t {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_gops*100))
+                        print ("{:<10} {:<15} {:<15}\t {:0.2f}".format(search_result['name'], mac_list[layer_num], search_result['dur'], (mac_list[layer_num]/search_result['dur'])/max_mega_ops*100))
                         total_mac += mac_list[layer_num]
                         list_dur.append(search_result['dur'])
                     else:
                         print('There is no layer in the simulation result: ',layer_name,'\n')
-                print("{:<10} {:<15} {:d}({:.2%})\t {:0.2f}".format("Total", targets_mac, int(targets_dur),targets_dur/total_dur, targets_mac/targets_dur/max_gops*100))
+                print("{:<10} {:<15} {:d}({:.2%})\t {:0.2f}".format("Total", targets_mac, int(targets_dur),targets_dur/total_dur, targets_mac/targets_dur/max_mega_ops*100))
                 targets=[]
                 targets_dur = 0.0
                 targets_mac = 0

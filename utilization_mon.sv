@@ -42,8 +42,8 @@ class utilization_mon_c;
     int w,h,ic,oc; // input act width position, height position, input channel position, output channel position
     int num_layer;
     int fd;
-    time ts_conv, ts_act, ts_weight, ts_layer, ts_eltwise, ts_dma;
-    time dur_conv, dur_act, dur_weight, dur_layer, dur_eltwise, dur_dma;
+    realtime ts_conv, ts_act, ts_act_frame, ts_weight, ts_layer, ts_eltwise, ts_dma;
+    realtime dur_conv, dur_act, dur_act_frame, dur_weight, dur_layer, dur_eltwise, dur_dma;
     typedef enum {conv, mem_input_act, mem_weight, layer, eltwise, dma} e_category;
     e_category cat;
     string name;
@@ -97,80 +97,86 @@ class utilization_mon_c;
                         oc = vif.oc_frame;
                     end
 
-                    ts_conv = $time;
+                    ts_conv = $time/1000.0;
 
                     @(negedge |vif.conv_vld)
-                    dur_conv = $time - ts_conv;
+                    dur_conv = ($time/1000.0 - ts_conv);
                     cat = conv;
-                    $fdisplay(fd, "\t\t{\"name\": \"CONV(row%0d_ic%0d_oc%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 1, \"ts\": %d, \"dur\": %d, \"cname\": %s},", h, ic, oc, cat.name(), vif.dataflow_en, ts_conv, dur_conv, "\"thread_state_iowait\"");
+                    $fdisplay(fd, "\t\t{\"name\": \"CONV(row%0d_ic%0d_oc%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 1, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", h, ic, oc, cat.name(), vif.dataflow_en, ts_conv, dur_conv, "\"thread_state_iowait\"");
 
                 end
 
                 forever begin: mem_copy_activation
                     @(posedge vif.input_loader_req)
-                    ts_act = $time;
+                    ts_act = $time/1000.0;
 
                     if(vif.dataflow_en==0) begin // row-based
                         @(negedge vif.input_loader_req)
-                        dur_act = $time - ts_act;
+                        dur_act = ($time/1000.0 - ts_act);
                         cat = mem_input_act;
-                        $fdisplay(fd, "\t\t{\"name\": \"IFM_from_DRAM_to_buffer(row%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %d, \"dur\": %d, \"cname\": %s},", vif.h_row+1, cat.name(), vif.dataflow_en, ts_act, dur_act, "\"detailed_memory_dump\"");
+                        $fdisplay(fd, "\t\t{\"name\": \"IFM_from_DRAM_to_buffer(row%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", vif.h_row+1, cat.name(), vif.dataflow_en, ts_act, dur_act, "\"detailed_memory_dump\"");
                     end
-                    else begin // frame-based
+                end
+
+                forever begin: mem_copy_activation_frame
+                    @(posedge vif.input_loader_rev_frame)
+                    ts_act_frame = $time/1000.0;
+
+                    if(vif.dataflow_en==1) begin // frame-based
                         @(negedge vif.input_loader_rev_frame)
-                        dur_act = $time - ts_act;
+                        dur_act_frame = ($time/1000.0 - ts_act_frame);
                         cat = mem_input_act;
-                        $fdisplay(fd, "\t\t{\"name\": \"IFM_from_DRAM_to_buffer(entire_frame)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %d, \"dur\": %d, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_act, dur_act, "\"detailed_memory_dump\"");
+                        $fdisplay(fd, "\t\t{\"name\": \"IFM_from_DRAM_to_buffer(entire_frame)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 2, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_act_frame, dur_act_frame, "\"detailed_memory_dump\"");
                     end
                 end
 
                 forever begin: mem_copy_weight
                     @(posedge vif.weight_req_row, posedge vif.weight_req_frame);
                     if(vif.dataflow_en==0) begin // row-based
-                        ts_weight = $time;
+                        ts_weight = $time/1000.0;
 
                         @(negedge vif.weight_req_row)
-                        dur_weight = $time - ts_weight;
+                        dur_weight = ($time/1000.0 - ts_weight);
 
                         cat = mem_weight;
-                        $fdisplay(fd, "\t\t{\"name\": \"Weight_from_DRAM_to_paramload(row%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %d, \"dur\": %d, \"cname\": %s},", vif.h_row, cat.name(), vif.dataflow_en, ts_weight, dur_weight, "\"good\"");
+                        $fdisplay(fd, "\t\t{\"name\": \"Weight_from_DRAM_to_paramload(row%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", vif.h_row, cat.name(), vif.dataflow_en, ts_weight, dur_weight, "\"good\"");
                     end
                     else begin // frame-based
-                        ts_weight = $time;
+                        ts_weight = $time/1000.0;
 
                         @(negedge vif.weight_req_frame)
-                        dur_weight = $time - ts_weight;
+                        dur_weight = ($time/1000.0 - ts_weight);
 
                         cat = mem_weight;
-                        $fdisplay(fd, "\t\t{\"name\": \"Weight_from_DRAM_to_weight_buff(%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %d, \"dur\": %d, \"cname\": %s},", vif.weight_buf_sel_frame, cat.name(), vif.dataflow_en, ts_weight, dur_weight, "\"good\"");
+                        $fdisplay(fd, "\t\t{\"name\": \"Weight_from_DRAM_to_weight_buff(%0d)\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 3, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", vif.weight_buf_sel_frame, cat.name(), vif.dataflow_en, ts_weight, dur_weight, "\"good\"");
                     end
                 end
 
                 forever begin: elt_wise_addition
                     @(posedge vif.elt_wise_en)
-                    ts_eltwise = $time;
+                    ts_eltwise = $time/1000.0;
                     @(negedge vif.elt_wise_en)
-                    dur_eltwise = $time - ts_eltwise;
+                    dur_eltwise = ($time/1000.0 - ts_eltwise);
                     cat = eltwise;
-                    $fdisplay(fd, "\t\t{\"name\": \"Element-wise_addition\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 4, \"ts\": %d, \"dur\": %d, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_eltwise, dur_eltwise, "\"olive\"");
+                    $fdisplay(fd, "\t\t{\"name\": \"Element-wise_addition\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 4, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_eltwise, dur_eltwise, "\"olive\"");
                 end
 
                 forever begin: mem_copy_ofm
                     @(posedge vif.dma_start)
-                    ts_dma = $time;
+                    ts_dma = $time/1000.0;
                     @(negedge vif.dma_last)
-                    dur_dma = $time - ts_dma;
+                    dur_dma = ($time/1000.0 - ts_dma);
                     cat = dma;
-                    $fdisplay(fd, "\t\t{\"name\": \"OFM_from_buffer_to_DRAM\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 5, \"ts\": %d, \"dur\": %d, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_dma, dur_dma, "\"background_memory_dump\"");
+                    $fdisplay(fd, "\t\t{\"name\": \"OFM_from_buffer_to_DRAM\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 5, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_dma, dur_dma, "\"background_memory_dump\"");
                 end
 
                 forever begin: layer_seq
                     @(posedge vif.layer_start)
-                    ts_layer = $time;
+                    ts_layer = $time/1000.0;
                     @(posedge vif.layer_done)
-                    dur_layer = $time - ts_layer;
+                    dur_layer = ($time/1000.0 - ts_layer);
                     cat = layer;
-                    $fdisplay(fd, "\t\t{\"name\": \"Layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %d, \"dur\": %d},", num_layer, cat.name(), ts_layer, dur_layer);
+                    $fdisplay(fd, "\t\t{\"name\": \"Layer%0d\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": 2, \"tid\": 0, \"ts\": %.3f, \"dur\": %.3f},", num_layer, cat.name(), ts_layer, dur_layer);
                     num_layer++;
                 end
 

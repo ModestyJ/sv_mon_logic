@@ -42,9 +42,9 @@ class utilization_mon_c;
     int w,h,ic,oc; // input act width position, height position, input channel position, output channel position
     int num_layer;
     int fd;
-    realtime ts_conv, ts_act, ts_act_frame, ts_weight, ts_layer, ts_eltwise, ts_dma;
-    realtime dur_conv, dur_act, dur_act_frame, dur_weight, dur_layer, dur_eltwise, dur_dma;
-    typedef enum {conv, mem_input_act, mem_weight, layer, eltwise, dma} e_category;
+    realtime ts_conv, ts_act, ts_act_frame, ts_weight, ts_layer, ts_eltwise, ts_dma, ts_pdma, ts_weight_dma;
+    realtime dur_conv, dur_act, dur_act_frame, dur_weight, dur_layer, dur_eltwise, dur_dma, dur_pdma, dur_weight_dma;
+    typedef enum {conv, mem_input_act, mem_weight, layer, eltwise, dma, pdma, weight_dma} e_category;
     e_category cat;
     string name;
 
@@ -64,18 +64,22 @@ class utilization_mon_c;
             $fdisplay(fd, "\t\"traceEvents\": [");
             // Mapping pid, tid name for readability {
             $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 0, \"args\": {\"labels\": \"0.Row-based\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 1, \"args\": {\"name\": \"3.Convolution\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 2, \"args\": {\"name\": \"2.IFM DRAM to Buffer\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 3, \"args\": {\"name\": \"1.Weight DRAM to Buffer\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 4, \"args\": {\"name\": \"4.Element-wise Addition\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 5, \"args\": {\"name\": \"5.OFM Buffer to DRAM\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 1, \"args\": {\"name\": \"4.Convolution\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 2, \"args\": {\"name\": \"3.DRAM to L1 Act Copy\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 3, \"args\": {\"name\": \"1.CDMA\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 4, \"args\": {\"name\": \"5.Elemwise Add\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 5, \"args\": {\"name\": \"6.Output Write\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 6, \"args\": {\"name\": \"7.PDMA\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 0, \"tid\": 7, \"args\": {\"name\": \"2.Weight Fetch\"} },");
 
             $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 1, \"args\": {\"labels\": \"1.Frame-based\"} },");
             $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 1, \"args\": {\"name\": \"3.Convolution\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 2, \"args\": {\"name\": \"1.IFM DRAM to Buffer\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 3, \"args\": {\"name\": \"2.Weight DRAM to Buffer\"} },");
-            //$fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 4, \"args\": {\"name\": \"Element-wise Addition\"} },");
-            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 5, \"args\": {\"name\": \"4.OFM Buffer to DRAM\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 2, \"args\": {\"name\": \"1.CDMA\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 3, \"args\": {\"name\": \"2.DRAM to L2 Weight Copy\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 4, \"args\": {\"name\": \"4.Elemwise Add\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 5, \"args\": {\"name\": \"5.Output Write\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 6, \"args\": {\"name\": \"6.PDMA\"} },");
+            $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 1, \"tid\": 7, \"args\": {\"name\": \"7.Weight Fetch\"} },");
 
             $fdisplay(fd, "\t\t{\"name\": \"process_labels\", \"ph\": \"M\", \"pid\": 2, \"args\": {\"labels\": \"Layer\"} },");
             $fdisplay(fd, "\t\t{\"name\": \"thread_name\", \"ph\": \"M\", \"pid\": 2, \"tid\": 0, \"args\": {\"name\": \"Layer\"} },");
@@ -168,6 +172,24 @@ class utilization_mon_c;
                     dur_dma = ($time/1000.0 - ts_dma);
                     cat = dma;
                     $fdisplay(fd, "\t\t{\"name\": \"OFM_from_buffer_to_DRAM\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 5, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_dma, dur_dma, "\"background_memory_dump\"");
+                end
+
+                forever begin: mem_copy_pdma
+                    @(posedge vif.pdma_start)
+                    ts_pdma = $time/1000.0;
+                    @(negedge vif.pdma_last)
+                    dur_pdma = ($time/1000.0 - ts_pdma);
+                    cat = pdma;
+                    $fdisplay(fd, "\t\t{\"name\": \"PDMA\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 6, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_pdma, dur_pdma, "\"detailed_memory_dump\"");
+                end
+
+                forever begin: weight_copy_dma
+                    @(posedge (!vif.clk & vif.weight_dma_start))
+                    ts_weight_dma = $time/1000.0;
+                    @(negedge vif.weight_dma_last)
+                    dur_weight_dma = ($time/1000.0 - ts_weight_dma);
+                    cat = weight_dma;
+                    $fdisplay(fd, "\t\t{\"name\": \"Weight Fetch\", \"cat\": \"%0s\", \"ph\": \"X\", \"pid\": %d, \"tid\": 7, \"ts\": %.3f, \"dur\": %.3f, \"cname\": %s},", cat.name(), vif.dataflow_en, ts_weight_dma, dur_weight_dma, "\"good\"");
                 end
 
                 forever begin: layer_seq

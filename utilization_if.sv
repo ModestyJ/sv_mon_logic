@@ -22,12 +22,17 @@ interface utilization_if
         input int weight_buf_sel_frame,
         input logic input_loader_rev_frame,
         input int input_buff_sel_frame,
+        input logic pdma_start,
+        input logic pdma_last,
         // input activation
         input logic input_loader_req,
         // output writer
         input logic elt_wise_en,
         input logic dma_start,
         input logic dma_last,
+        // weight
+        input weight_dma_start,
+        input weight_dma_last,
         // layer
         input layer_start,
         input layer_done,

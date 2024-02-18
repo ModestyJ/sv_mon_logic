@@ -33,25 +33,37 @@
 //    colorKellyGreen     = "cq_build_attempt_passed"      // 108, 218, 35
 ///////////////////////////////////////////////////////////////////////////
 
+`ifdef LEGACY_VERILOG
+module utilization_mon (utilization_if vif); 
+`else
 class utilization_mon_c;
     virtual utilization_if vif;
+`endif // LEGACY_VERILOG
 
     // monitoring variables
     int pid; // row-based:0, frame-based:1, layer_event:2
     int tid; // compute_op:1, memory_op_input_act:2, memory_op_model_param:3
     int w,h,ic,oc; // input act width position, height position, input channel position, output channel position
-    int num_layer;
     int fd;
     realtime ts_conv, ts_act, ts_act_frame, ts_weight, ts_layer, ts_eltwise, ts_dma, ts_pdma, ts_weight_dma;
     realtime dur_conv, dur_act, dur_act_frame, dur_weight, dur_layer, dur_eltwise, dur_dma, dur_pdma, dur_weight_dma;
     typedef enum {conv, mem_input_act, mem_weight, layer, eltwise, dma, pdma, weight_dma} e_category;
     e_category cat;
+    int num_layer;
+
+`ifdef LEGACY_VERILOG
+    string name = "profile";
+    initial begin
+        num_layer = 0;
+    end
+`else
     string name;
 
     function new(string name);
         this.num_layer = 0;
         this.name      = name;
     endfunction
+`endif // LEGACY_VERILOG
 
     task run();
         $timeformat(-9); // time unit: ns
@@ -217,6 +229,10 @@ class utilization_mon_c;
         
     endtask
 
+`ifdef LEGACY_VERILOG
+endmodule
+`else
 endclass
+`endif // LEGACY_VERILOG
 
-`endif
+`endif // __utilization_mon

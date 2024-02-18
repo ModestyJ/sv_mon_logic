@@ -89,3 +89,12 @@ _json_ format must be completeness as follows.
 ```
 
 If last part is not generated correctly, please check `is_last_layer` is connected to correct simulation end condition.  
+
+### Some simulator requires additional license for system verilog run-time features to support OOP
+Use legacy verilog module instead of the system verilog class.
+Refer to `utilization_mon.sv`.
+```
+Add +define+LEGACY_VERILOG
+
+```
+

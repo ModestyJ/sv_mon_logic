@@ -48,9 +48,10 @@ def main(args):
     util_data = json.load(json_file)
     pf = util_data['parallelism_factor']
     freq = util_data['clock_freq']
+    num_chip = util_data.get('num_chip', 1)
     mac_list = util_data['mac']
 
-    max_mega_ops = freq*pf*pf*2
+    max_mega_ops = freq*pf*pf*2*num_chip
     max_tops = max_mega_ops/1000000
     print("Maximum TOPS for ", pf,"x",pf, " MACs @", freq, "MHz = ", max_tops)
 

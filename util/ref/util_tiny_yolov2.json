@@ -1,6 +1,7 @@
 {
     "parallelism_factor": 32,
     "clock_freq": 200,
+    "npu_num": 1
     "mac": [
         149520384,
         398721024,
